@@ -20,9 +20,6 @@ library(RColorBrewer)
 # read subtype data
 data = read.table("eIF4A3_DEA_per_subtype.tsv", sep='\t', header=TRUE, stringsAsFactors=FALSE)
 
-# reverse order of dataframe for plotting
-data = data[dim(data)[1]:1,]
-
 # generate plot labels
 data$labels = paste(data$cancer.type, data$cancer.subtype, sep=', ')
 
@@ -46,9 +43,6 @@ dev.off()
 
 # read type data
 data.type = read.table("eIF4A3_DEA_per_type.tsv", sep='\t', header=TRUE, stringsAsFactors=FALSE)
-
-# reverse order of dataframe for plotting
-data.type = data.type[dim(data.type)[1]:1,]
 
 # keep only types for which we have subtypes
 data.type = data.type[ data.type$cancer.type %in% data$cancer.type, ]

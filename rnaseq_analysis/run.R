@@ -135,55 +135,63 @@ union_genes = unique(c(case1_up$Symbol, case2_up$Symbol))
 
 # run enrichR on such gene list
 enrichr_dbs = c("GO_Biological_Process_2018", "GO_Cellular_Component_2018")
-up_overlap_enrichment = enrichr(union_genes, enrichr_dbs)
+enrichr_dbs_labels = c("GO_biol_proc", "GO_cell_comp")
 
-up_overlap_enrichment_bp = up_overlap_enrichment[[1]]
-write.table(up_overlap_enrichment_bp, "enrichment_GO_biol_proc.tsv", sep='\t', row.names=FALSE, quote=FALSE)
+up_enrichment = enrichr(union_genes, enrichr_dbs)
 
-up_overlap_enrichment = up_overlap_enrichment[[2]]
-write.table(up_overlap_enrichment, "enrichment_GO_cell_comp.tsv", sep='\t', row.names=FALSE, quote=FALSE)
-up_overlap_enrichment = up_overlap_enrichment[ up_overlap_enrichment$P.value <= 0.05, ]
+for (i in range(1, length(enrichr_dbs))) {
 
-# sort by P-value
-sorted_enrichment = up_overlap_enrichment[order(up_overlap_enrichment$P.value, decreasing=TRUE),]
+    this_enrichment = up_enrichment[[i]]
+    write.table(this_enrichment, sprintf("enrichment_up_%s.tsv", enrichr_dbs_labels[i]), sep='\t', row.names=FALSE, quote=FALSE)
+    
+    this_enrichment = this_enrichment[ this_enrichment$P.value <= 0.05, ]
+    
+    # sort by P-value
+    sorted_enrichment = this_enrichment[order(this_enrichment$P.value, decreasing=TRUE),]
+    
+    # number of genes per category
+    gene_count = lapply(sorted_enrichment$Genes, function(x) length(strsplit(x, ';' )[[1]]))
+    sorted_enrichment$gene.count = gene_count
+    
+    # unlist the unlistable to make it compatible with ggplot
+    sorted_enrichment$P.value = unlist(sorted_enrichment$P.value)
+    sorted_enrichment$Term = unlist(sorted_enrichment$Term)
+    sorted_enrichment$gene.count = unlist(sorted_enrichment$gene.count)
+    
+    sorted_enrichment$Term = factor(sorted_enrichment$Term, levels=sorted_enrichment$Term)
+    
+    # do the plotting of GO terms, number of genes and P-pvalues
+    png(sprintf("categories_up_%s.png", enrichr_dbs_labels[i]), height=3000, width=1000)
+    print(ggplot(data=sorted_enrichment, aes_string(x="P.value", y="Term", size="gene.count")) + 
+    geom_point() + 
+    scale_size(range=c(0, 6)) + 
+    ylab(NULL) +
+    scale_x_continuous( trans = "log10",
+                        breaks = trans_breaks("log10", function(x) 10^x),
+                        labels = trans_format("log10", math_format(10^.x))))
+    dev.off()
+    
+    df_l = dim(sorted_enrichment)[1]
+    png(sprintf("categories_up_first_10_%s.png", enrichr_dbs_labels[i]), width=600)
+    print(ggplot(data=sorted_enrichment[(df_l-9):df_l,], aes_string(x="P.value", y="Term", size="gene.count")) + 
+    geom_point() + 
+    scale_size(range=c(0, 6)) + 
+    ylab(NULL) +
+    scale_x_continuous( trans = "log10", 
+                        breaks = trans_breaks("log10", function(x) 10^x),
+                        labels = trans_format("log10", math_format(10^.x))))
+    dev.off()
 
-# number of genes per category
-gene_count = lapply(sorted_enrichment$Genes, function(x) length(strsplit(x, ';' )[[1]]))
-sorted_enrichment$gene.count = gene_count
+}
 
-# unlist the unlistable to make it compatible with ggplot
-sorted_enrichment$P.value = unlist(sorted_enrichment$P.value)
-sorted_enrichment$Term = unlist(sorted_enrichment$Term)
-sorted_enrichment$gene.count = unlist(sorted_enrichment$gene.count)
-
-sorted_enrichment$Term = factor(sorted_enrichment$Term, levels=sorted_enrichment$Term)
-
-# do the plotting of GO terms, number of genes and P-pvalues
-png("categories.png")
-ggplot(data=sorted_enrichment, aes_string(x="P.value", y="Term", size="gene.count")) + 
-geom_point() + 
-scale_size(range=c(0, 6)) + 
-ylab(NULL) +
-scale_x_continuous( trans = "log10", 
-                    breaks = trans_breaks("log10", function(x) 10^x),
-                    labels = trans_format("log10", math_format(10^.x)))
-dev.off()
-
-png("categories_first10.png")
-ggplot(data=sorted_enrichment[1:10,], aes_string(x="P.value", y="Term", size="gene.count")) + 
-geom_point() + 
-scale_size(range=c(0, 6)) + 
-ylab(NULL) +
-scale_x_continuous( trans = "log10", 
-                    breaks = trans_breaks("log10", function(x) 10^x),
-                    labels = trans_format("log10", math_format(10^.x)))
-dev.off()
+this_enrichment = up_enrichment[[2]]
+this_enrichment = this_enrichment[ this_enrichment$P.value <= 0.05, ]
 
 # prepare logFC matrix to be plotted
 # get from both dataframes those genes that are in the union list
 case1_overlap = case1[ case1$Symbol %in% union_genes, c("Symbol", "logFC")]
 case2_overlap = case2[ case2$Symbol %in% union_genes, c("Symbol", "logFC")]
-
+    
 # join the two dataframes into one 
 common_up_fc = full_join(case1_overlap, case2_overlap, by="Symbol" )
 
@@ -201,9 +209,9 @@ common_up_fc_matrix = common_up_fc_matrix[ matrix_order, ]
 
 
 # do the plotting, using all GO terms
-int_gos = unique(up_overlap_enrichment$Term)
+int_gos = unique(this_enrichment$Term)
 
-plot_heatmap(up_overlap_enrichment, 
+plot_heatmap(this_enrichment, 
                     common_up_fc_matrix, 
                     tfeb_genes, 
                     int_gos, 
@@ -219,7 +227,7 @@ int_gos = c("lysosome (GO:0005764)",
             "autophagosome (GO:0005776)",
             "autophagosome membrane (GO:0000421)")
 
-plot_heatmap(up_overlap_enrichment, 
+plot_heatmap(this_enrichment, 
                     common_up_fc_matrix, 
                     tfeb_genes, 
                     int_gos, 
@@ -227,3 +235,62 @@ plot_heatmap(up_overlap_enrichment,
                     "heatmap_union_functionally_related_gos.png",
                     "genes_union_functionally_related_gos.tsv")
 
+cases_cols = c("character", "numeric", "numeric", "numeric", "numeric", "numeric", "character", "numeric", "character")
+case1 = read.table('control-VS-case1.DEseq2_Method.GeneDiffExp_edit.csv', sep=';', header=T, colClasses=cases_cols)
+case2 = read.table('control-VS-case2.DEseq2_Method.GeneDiffExp_edit.csv', sep=';', header=T, colClasses=cases_cols)
+
+# perform enrichment analysis on downregulated genes as well
+
+# identify downregulated genes
+case1_down   = case1[ case1$classification == 'Down' ,]
+case2_down   = case2[ case2$classification == 'Down' ,]
+
+# list of genes that are downregulated in either experiments
+union_genes = unique(c(case1_down$Symbol, case2_down$Symbol))
+
+# run enrichR on such gene list
+down_enrichment = enrichr(union_genes, enrichr_dbs)
+
+for (i in range(1, length(enrichr_dbs))) {
+    
+    this_enrichment = down_enrichment[[i]]
+    write.table(this_enrichment, sprintf("enrichment_down_%s.tsv", enrichr_dbs_labels[i]), sep='\t', row.names=FALSE, quote=FALSE)
+    
+    this_enrichment = this_enrichment[ this_enrichment$P.value <= 0.05, ]
+    
+    # sort by P-value
+    sorted_enrichment = this_enrichment[order(this_enrichment$P.value, decreasing=TRUE),]
+    
+    # number of genes per category
+    gene_count = lapply(sorted_enrichment$Genes, function(x) length(strsplit(x, ';' )[[1]]))
+    sorted_enrichment$gene.count = gene_count
+    
+    # unlist the unlistable to make it compatible with ggplot
+    sorted_enrichment$P.value = unlist(sorted_enrichment$P.value)
+    sorted_enrichment$Term = unlist(sorted_enrichment$Term)
+    sorted_enrichment$gene.count = unlist(sorted_enrichment$gene.count)
+    
+    sorted_enrichment$Term = factor(sorted_enrichment$Term, levels=sorted_enrichment$Term)
+    
+    # do the plotting of GO terms, number of genes and P-pvalues
+    png(sprintf("categories_down_%s.png", enrichr_dbs_labels[i]), height=4000, width=1000)
+    print(ggplot(data=sorted_enrichment, aes_string(x="P.value", y="Term", size="gene.count")) + 
+        geom_point() + 
+        scale_size(range=c(0, 6)) + 
+        ylab(NULL) +
+        scale_x_continuous( trans = "log10", 
+                            breaks = trans_breaks("log10", function(x) 10^x),
+                            labels = trans_format("log10", math_format(10^.x))))
+    dev.off()
+    
+    df_l = dim(sorted_enrichment)[1]
+    png(sprintf("categories_down_first_10_%s.png", enrichr_dbs_labels[i]))
+    print(ggplot(data=sorted_enrichment[(df_l-9):df_l,], aes_string(x="P.value", y="Term", size="gene.count")) + 
+        geom_point() + 
+        scale_size(range=c(0, 6)) + 
+        ylab(NULL) +
+        scale_x_continuous( trans = "log10", 
+                            breaks = trans_breaks("log10", function(x) 10^x),
+                            labels = trans_format("log10", math_format(10^.x))))
+    dev.off()
+}

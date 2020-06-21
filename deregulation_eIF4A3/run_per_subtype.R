@@ -46,6 +46,7 @@ for (t in main_types) {
 
 	for (st in subtypes$cancer.subtype) {	
 		load(paste0(data_repository, t, "/", t, "_", st, "_dataDEGs.rda"))
+                print(dim(dataDEGs))
 
 		# get data relative to eIF4A3
 		this_data = dataDEGs[rownames(dataDEGs) == gene, ]

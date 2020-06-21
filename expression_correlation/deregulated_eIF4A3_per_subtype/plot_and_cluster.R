@@ -95,15 +95,17 @@ analyze_correlation = function(name, alpha, fractions) {
     cols_full = colSums( (! is.na(corrs_m))/dim(corrs_m)[1] )
     rows_full = rowSums( (! is.na(corrs_m))/dim(corrs_m)[2] )
 
+    print("ECDF")
+
     # calculate empirical cumulative distribution functions 
     png_fname = sprintf("rows_ecdf_%s.png", name)
     png(png_fname)
-    plot(ecdf(rows_full))
+    plot(ecdf(as.vector(rows_full)))
     dev.off()
 
     png_fname = sprintf("cols_ecdf_%s.png", name)
     png(png_fname)
-    plot(ecdf(cols_full))
+    plot(ecdf(as.vector(cols_full)))
     dev.off()
 
     # plot filtered matrix
