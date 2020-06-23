@@ -16,13 +16,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
 library(ComplexHeatmap)
 library(circlize)
 library(ggplot2)
 library(factoextra)
-
-# color scale for plots
 
 analyze_correlation = function(name, alpha) {
 
@@ -65,8 +62,8 @@ analyze_correlation = function(name, alpha) {
 
     # plot
     ha = columnAnnotation(samples = anno_text(corrs$nsamples))
-    png_fname = sprintf("heatmap_%s_full.png", name)
-    png(png_fname, width=1000, height=1200)
+    pdf_fname = sprintf("heatmap_%s_full.pdf", name)
+    pdf(pdf_fname, width=10, height=12)
     hm = Heatmap(t(corrs_m),
             col=colf,
             na_col="grey",
@@ -80,8 +77,8 @@ analyze_correlation = function(name, alpha) {
     dev.off()
 
     # euclidean cluster and plot
-    png_fname = sprintf("heatmap_%s_full_clustering_euclidean.png", name)
-    png(png_fname, width=1000, height=1200)
+    pdf_fname = sprintf("heatmap_%s_full_clustering_euclidean.pdf", name)
+    pdf(pdf_fname, width=10, height=12)
     hm = Heatmap(t(corrs_m), 
             col=colf,
             cluster_columns=T,
@@ -102,8 +99,8 @@ analyze_correlation = function(name, alpha) {
     
     corrs_m = corrs_m[column_order(hm), row_order(hm)] # because I'm plotting the transposed matrix
     
-    png_fname = sprintf("heatmap_%s_clustering_euclidean_filt.png", name)
-    png(png_fname, width=1000, height=800)
+    pdf_fname = sprintf("heatmap_%s_clustering_euclidean_filt.pdf", name)
+    pdf(pdf_fname, width=10, height=12)
     hm = Heatmap(t(corrs_m),
                  na_col="grey", 
                  col=colf,
@@ -132,19 +129,21 @@ analyze_correlation = function(name, alpha) {
     rows_full = rowSums( (! is.na(corrs_m))/dim(corrs_m)[2] )
     
     # calculate empirical cumulative distribution functions 
-    png_fname = sprintf("rows_ecdf_%s.png", name)
-    png(png_fname)
-    plot(ecdf(as.vector(rows_full)))
+    pdf_fname = sprintf("rows_ecdf_%s.pdf", name)
+    title = sprintf("ECDF for rows, %s gene set", name)
+    pdf(pdf_fname)
+    plot(ecdf(as.vector(rows_full)), main=title)
     dev.off()
 
-    png_fname = sprintf("cols_ecdf_%s.png", name)
-    png(png_fname)
-    plot(ecdf(as.vector(cols_full)))
+    pdf_fname = sprintf("cols_ecdf_%s.pdf", name)
+    title = sprintf("ECDF for columns, %s gene set", name)
+    pdf(pdf_fname)
+    plot(ecdf(as.vector(cols_full)), main=title)
     dev.off()
 
     # plot filtered matrix
-    png_fname = sprintf("heatmap_%s_full_filt.png", name)
-    png(png_fname, width=1000, height=1200)
+    pdf_fname = sprintf("heatmap_%s_full_filt.pdf", name)
+    pdf(pdf_fname, width=10, height=12)
     hm = Heatmap(t(corrs_m),
             col=colf,
             na_col="grey",

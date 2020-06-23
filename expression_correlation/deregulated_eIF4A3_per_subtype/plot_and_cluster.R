@@ -1,9 +1,25 @@
+#!/usr/bin/env R
+
+# plot_and_cluster.R - plot and cluster correlation data
+# Copyright (C) 2020, Matteo Tiberti, Elena Papaleo
+# 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 library(ComplexHeatmap)
 library(circlize)
 library(ggplot2)
 library(factoextra)
-
-# color scale for plots
 
 analyze_correlation = function(name, alpha, fractions) {
 
@@ -47,8 +63,8 @@ analyze_correlation = function(name, alpha, fractions) {
 
     # plot
     ha = columnAnnotation(samples = anno_text(corrs$nsamples))
-    png_fname = sprintf("heatmap_%s_full.png", name)
-    png(png_fname, width=1000, height=1200)
+    pdf_fname = sprintf("heatmap_%s_full.pdf", name)
+    pdf(pdf_fname, width=10, height=14)
     hm = Heatmap(t(corrs_m),
             col=colf,
             na_col="grey",
@@ -64,8 +80,8 @@ analyze_correlation = function(name, alpha, fractions) {
     dev.off()
 
     # euclidean cluster and plot
-    png_fname = sprintf("heatmap_%s_full_clustering_euclidean.png", name)
-    png(png_fname, width=1000, height=1200)
+    pdf_fname = sprintf("heatmap_%s_full_clustering_euclidean.pdf", name)
+    pdf(pdf_fname, width=10, height=14)
     hm = Heatmap(t(corrs_m), 
             col=colf,
             cluster_columns=T,
@@ -95,22 +111,22 @@ analyze_correlation = function(name, alpha, fractions) {
     cols_full = colSums( (! is.na(corrs_m))/dim(corrs_m)[1] )
     rows_full = rowSums( (! is.na(corrs_m))/dim(corrs_m)[2] )
 
-    print("ECDF")
-
     # calculate empirical cumulative distribution functions 
-    png_fname = sprintf("rows_ecdf_%s.png", name)
-    png(png_fname)
-    plot(ecdf(as.vector(rows_full)))
+    pdf_fname = sprintf("rows_ecdf_%s.pdf", name)
+    title = sprintf("ECDF for rows, %s gene set", name)
+    pdf(pdf_fname)
+    plot(ecdf(as.vector(rows_full)), main=title)
     dev.off()
 
-    png_fname = sprintf("cols_ecdf_%s.png", name)
-    png(png_fname)
-    plot(ecdf(as.vector(cols_full)))
+    pdf_fname = sprintf("cols_ecdf_%s.pdf", name)
+    title = sprintf("ECDF for columns, %s gene set", name)
+    pdf(pdf_fname)
+    plot(ecdf(as.vector(cols_full)), main=title)
     dev.off()
 
     # plot filtered matrix
-    png_fname = sprintf("heatmap_%s_full_filt.png", name)
-    png(png_fname, width=1000, height=1200)
+    pdf_fname = sprintf("heatmap_%s_full_filt.pdf", name)
+    pdf(pdf_fname, width=10, height=14)
     hm = Heatmap(t(corrs_m),
             col=colf,
             na_col="grey",
@@ -149,8 +165,8 @@ analyze_correlation = function(name, alpha, fractions) {
         corrs_m2 = as.matrix(corrs[,4:dim(corrs)[2]])
         corrs_m2 = corrs_m2[rows_idxs, cols_idxs]
 
-        png_fname = sprintf("heatmap_%s_%.2f_%.2f_clustering_euclidean.png", name, alpha, frac)
-        png(png_fname, width=1000, height=800)
+        pdf_fname = sprintf("heatmap_%s_%.2f_%.2f_clustering_euclidean.pdf", name, alpha, frac)
+        pdf(pdf_fname, width=10, height=14)
         hm = Heatmap(t(corrs_m2), 
                 col=colf,
                 cluster_columns=T,
@@ -170,8 +186,8 @@ analyze_correlation = function(name, alpha, fractions) {
         corrs_m = corrs_m[rows_idxs, cols_idxs]
         corrs_m = corrs_m[column_order(hm), row_order(hm)] # because I'm plotting the transposed matrix
 
-        png_fname = sprintf("heatmap_%s_%.2f_%.2f_clustering_euclidean_filt.png", name, alpha, frac)
-        png(png_fname, width=1000, height=800)
+        pdf_fname = sprintf("heatmap_%s_%.2f_%.2f_clustering_euclidean_filt.pdf", name, alpha, frac)
+        pdf(pdf_fname, width=10, height=14)
         hm = Heatmap(t(corrs_m),
                 na_col="grey", 
                 col=colf,
