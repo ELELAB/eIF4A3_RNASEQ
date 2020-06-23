@@ -1,0 +1,25 @@
+INFO [2020-06-23 13:04:35] [[1]]
+INFO [2020-06-23 13:04:35] list(c1 = case1_up$Symbol, c2 = case2_up$Symbol)
+INFO [2020-06-23 13:04:35] 
+INFO [2020-06-23 13:04:35] $filename
+INFO [2020-06-23 13:04:35] [1] "venn_upregulated.pdf"
+INFO [2020-06-23 13:04:35] 
+INFO [2020-06-23 13:04:35] $category.names
+INFO [2020-06-23 13:04:35] list("Case 1", "Case 2")
+INFO [2020-06-23 13:04:35] 
+INFO [2020-06-23 13:04:35] $fontfamily
+INFO [2020-06-23 13:04:35] [1] "sans"
+INFO [2020-06-23 13:04:35] 
+INFO [2020-06-23 13:04:35] $cat.fontfamily
+INFO [2020-06-23 13:04:35] [1] "sans"
+INFO [2020-06-23 13:04:35] 
+INFO [2020-06-23 13:04:35] $lty
+INFO [2020-06-23 13:04:35] [1] "blank"
+INFO [2020-06-23 13:04:35] 
+INFO [2020-06-23 13:04:35] $imagetype
+INFO [2020-06-23 13:04:35] [1] "pdf"
+INFO [2020-06-23 13:04:35] 
+INFO [2020-06-23 13:04:35] $fill
+INFO [2020-06-23 13:04:35] myCol[1:2]
+INFO [2020-06-23 13:04:35] 
+ERROR [2020-06-23 13:04:35] You have misspelled your 'imagetype', please try again

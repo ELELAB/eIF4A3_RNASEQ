@@ -31,7 +31,9 @@ plot_heatmap <- function(enrichment_table,
                     int_gos, 
                     tfeb_color, 
                     output_file,
-                    output_gene_file) {
+                    output_gene_file,
+                    width,
+                    height) {
 
     # here we are plotting a ComplexHeatmap with two parts (heatmap and an extra annotation).
     # The heatmap shows the fold-change of the identified genes and the annotation
@@ -95,7 +97,7 @@ plot_heatmap <- function(enrichment_table,
                            grid_width=unit(2, "cm"))
 
     # plot heatmap with annotation
-    png(output_file, width=800, height=2400)
+    pdf(output_file, width=width, height=height)
     hm = Heatmap(fc_matrix,
                  cluster_columns=F,
                  cluster_rows=F,
@@ -121,12 +123,23 @@ case2_up   = case2[ case2$classification == 'Up' ,]
 
 # plot venn diagram
 myCol = brewer.pal(4, "Pastel2")
+
+venn.diagram(list(c1=case1_up$Symbol, c2=case2_up$Symbol),
+             filename="venn_upregulated.svg", 
+             category.names=list("Case 1","Case 2"),
+             fontfamily = "sans",
+             cat.fontfamily = "sans",
+             lty = 'blank',
+             imagetype='svg',
+             fill = myCol[1:2])
+
 venn.diagram(list(c1=case1_up$Symbol, c2=case2_up$Symbol),
              filename="venn_upregulated.tiff", 
              category.names=list("Case 1","Case 2"),
              fontfamily = "sans",
              cat.fontfamily = "sans",
              lty = 'blank',
+             imagetype='tiff',
              fill = myCol[1:2])
 
 
@@ -161,27 +174,25 @@ for (i in range(1, length(enrichr_dbs))) {
     sorted_enrichment$Term = factor(sorted_enrichment$Term, levels=sorted_enrichment$Term)
     
     # do the plotting of GO terms, number of genes and P-pvalues
-    png(sprintf("categories_up_%s.png", enrichr_dbs_labels[i]), height=3000, width=1000)
-    print(ggplot(data=sorted_enrichment, aes_string(x="P.value", y="Term", size="gene.count")) + 
+    #pdf(height=3000, width=1000)
+    plot = ggplot(data=sorted_enrichment, aes_string(x="P.value", y="Term", size="gene.count")) + 
     geom_point() + 
     scale_size(range=c(0, 6)) + 
     ylab(NULL) +
     scale_x_continuous( trans = "log10",
                         breaks = trans_breaks("log10", function(x) 10^x),
-                        labels = trans_format("log10", math_format(10^.x))))
-    dev.off()
+                        labels = trans_format("log10", math_format(10^.x)))
+    ggsave(sprintf("categories_up_%s.pdf", enrichr_dbs_labels[i]), plot=plot, width=10, height=dim(sorted_enrichment)[1]/8)
     
     df_l = dim(sorted_enrichment)[1]
-    png(sprintf("categories_up_first_10_%s.png", enrichr_dbs_labels[i]), width=600)
-    print(ggplot(data=sorted_enrichment[(df_l-9):df_l,], aes_string(x="P.value", y="Term", size="gene.count")) + 
+    plot = ggplot(data=sorted_enrichment[(df_l-9):df_l,], aes_string(x="P.value", y="Term", size="gene.count")) + 
     geom_point() + 
     scale_size(range=c(0, 6)) + 
     ylab(NULL) +
     scale_x_continuous( trans = "log10", 
                         breaks = trans_breaks("log10", function(x) 10^x),
-                        labels = trans_format("log10", math_format(10^.x))))
-    dev.off()
-
+                        labels = trans_format("log10", math_format(10^.x)))
+    ggsave(sprintf("categories_up_first_10_%s.pdf", enrichr_dbs_labels[i]), plot=plot, width=10, height=3.5)
 }
 
 this_enrichment = up_enrichment[[2]]
@@ -216,8 +227,19 @@ plot_heatmap(this_enrichment,
                     tfeb_genes, 
                     int_gos, 
                     "red", 
-                    "heatmap_union_all_gos.png",
-                    "genes_union_all_gos.tsv")
+                    "heatmap_union_all_gos.pdf",
+                    "genes_union_all_gos.tsv",
+                    width=8, height=35)
+
+plot_heatmap(this_enrichment, 
+             common_up_fc_matrix, 
+             tfeb_genes, 
+             int_gos, 
+             "black", 
+             "heatmap_union_all_gos_black.pdf",
+             "genes_union_all_gos_black.tsv",
+             width=8, height=35)
+
 
 # do the plotting, using selected GO terms
 int_gos = c("lysosome (GO:0005764)", 
@@ -232,8 +254,9 @@ plot_heatmap(this_enrichment,
                     tfeb_genes, 
                     int_gos, 
                     "black", 
-                    "heatmap_union_functionally_related_gos.png",
-                    "genes_union_functionally_related_gos.tsv")
+                    "heatmap_union_functionally_related_gos.pdf",
+                    "genes_union_functionally_related_gos.tsv",
+                    width=8, height=20)
 
 cases_cols = c("character", "numeric", "numeric", "numeric", "numeric", "numeric", "character", "numeric", "character")
 case1 = read.table('control-VS-case1.DEseq2_Method.GeneDiffExp_edit.csv', sep=';', header=T, colClasses=cases_cols)
@@ -273,24 +296,22 @@ for (i in range(1, length(enrichr_dbs))) {
     sorted_enrichment$Term = factor(sorted_enrichment$Term, levels=sorted_enrichment$Term)
     
     # do the plotting of GO terms, number of genes and P-pvalues
-    png(sprintf("categories_down_%s.png", enrichr_dbs_labels[i]), height=4000, width=1000)
-    print(ggplot(data=sorted_enrichment, aes_string(x="P.value", y="Term", size="gene.count")) + 
+    plot = ggplot(data=sorted_enrichment, aes_string(x="P.value", y="Term", size="gene.count")) + 
         geom_point() + 
         scale_size(range=c(0, 6)) + 
         ylab(NULL) +
         scale_x_continuous( trans = "log10", 
                             breaks = trans_breaks("log10", function(x) 10^x),
-                            labels = trans_format("log10", math_format(10^.x))))
-    dev.off()
-    
+                            labels = trans_format("log10", math_format(10^.x)))
+    ggsave(sprintf("categories_down_%s.pdf", enrichr_dbs_labels[i]), plot, width=10, height=dim(sorted_enrichment)[1]/10, limitsize=FALSE)
+
     df_l = dim(sorted_enrichment)[1]
-    png(sprintf("categories_down_first_10_%s.png", enrichr_dbs_labels[i]))
-    print(ggplot(data=sorted_enrichment[(df_l-9):df_l,], aes_string(x="P.value", y="Term", size="gene.count")) + 
+    plot = ggplot(data=sorted_enrichment[(df_l-9):df_l,], aes_string(x="P.value", y="Term", size="gene.count")) + 
         geom_point() + 
         scale_size(range=c(0, 6)) + 
         ylab(NULL) +
         scale_x_continuous( trans = "log10", 
                             breaks = trans_breaks("log10", function(x) 10^x),
-                            labels = trans_format("log10", math_format(10^.x))))
-    dev.off()
+                            labels = trans_format("log10", math_format(10^.x)))
+    ggsave(sprintf("categories_down_first_10_%s.pdf", enrichr_dbs_labels[i]), plot, width=10, height=3.5)
 }
