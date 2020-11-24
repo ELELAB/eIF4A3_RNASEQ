@@ -34,6 +34,10 @@ analyze_correlation = function(name, alpha, fractions) {
     corrs = read.table(corrs_fname, stringsAsFactors=FALSE, sep='\t', quote="")
     pvals = read.table(pvals_fname, stringsAsFactors=FALSE, sep='\t', quote="")
 
+    # remove KICH from the table
+    corrs = corrs[! grepl("KICH", corrs$cancer.type), ]
+    pvals = pvals[! grepl("KICH", pvals$cancer.type), ]
+
     # generate mixed type-subtype names
     rownames(corrs) = paste(corrs$cancer.type, corrs$cancer.subtype, sep="_")
     rownames(pvals) = paste(pvals$cancer.type, pvals$cancer.subtype, sep="_")

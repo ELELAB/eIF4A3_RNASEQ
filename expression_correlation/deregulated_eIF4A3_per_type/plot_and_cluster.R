@@ -33,6 +33,10 @@ analyze_correlation = function(name, alpha) {
     # read data
     corrs = read.table(corrs_fname, stringsAsFactors=FALSE, sep='\t', quote="")
     pvals = read.table(pvals_fname, stringsAsFactors=FALSE, sep='\t', quote="")
+    
+    # remove KICH from the table
+    corrs = corrs[! grepl("KICH", corrs$cancer.type), ]
+    pvals = pvals[! grepl("KICH", pvals$cancer.type), ]
 
     rownames(corrs) = corrs$cancer.type
     rownames(pvals) = pvals$cancer.type
@@ -59,6 +63,8 @@ analyze_correlation = function(name, alpha) {
     # generate matrices
     corrs_m = as.matrix(corrs[,3:dim(corrs)[2]])
     pvals_m = as.matrix(pvals[,3:dim(pvals)[2]])
+
+    print("AAA", dim(corrs_m))
 
     # plot
     ha = columnAnnotation(samples = anno_text(corrs$nsamples))
@@ -94,7 +100,6 @@ analyze_correlation = function(name, alpha) {
     
     tsv_fname = sprintf("heatmap_%s_full_clustering_euclidean.tsv", name)
     write.table(t(corrs_m)[row_order(hm), column_order(hm)], file=tsv_fname, sep='\t', quote=FALSE, row.names=TRUE, col.names=TRUE)
-    
     corrs_m[pvals_m > alpha] = NA
     
     corrs_m = corrs_m[column_order(hm), row_order(hm)] # because I'm plotting the transposed matrix
@@ -165,5 +170,5 @@ analyze_correlation = function(name, alpha) {
 
 # run analysis
 analyze_correlation("tfeb", 0.05)
-
+print("done tfeb")
 analyze_correlation("enriched", 0.05)
