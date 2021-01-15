@@ -1,37 +1,58 @@
-Computational Biology Laboratory, Danish Cancer Society Research Center, Strandboulevarden 49, 2100, Copenhagen, Denmark
+## Introduction
 
-Repository associated to the publication:
+Computational Biology Laboratory, Danish Cancer Society Research Center, Strandboulevarden 49, 2100, Copenhagen, Denmark.
 
-XXX
+This GitHub repository is associated with the publication
 
-reference contacts: Matteo Tiberti, tiberti-at-cancer.dk Elena Papaleo, elenap-at-cancer.dk
+    Despoina Sakellariou, Matteo Tiberti, Thomas H. Kleiber, Lorea Blazquez,
+    Aida Rodriguez-López, Marie Holm Abildgaard, Michal Lubas, Jiri Bartek,
+    Elena Papaleo, Lisa B. Frankel, eIF4A3 regulates the TFEB-mediated
+    transcriptional response via GSK3B to control autophagy, submitted.
 
-This repository contains analyses of RNASEQ experiments on cell lines and from TCGA to address to characterize eIF4A3.
+The repository was made with the intent of openly sharing both the raw input data
+used at the time of the analyses and the R-scripts employed to carry out the study.
 
-The repository was made with the intent of openly sharing both the raw input data used at the time of the analyses and the R-scripts employed to carry out the study.
+Please see the content of each folder for more details.
 
-The repository contains XXX folders which need to be used sequentially. Each folders contain a different README file with further information:
+PLEASE, CITE THE PUBLICATION ABOVE IF YOU USE THE CONTENT OF THIS REPOSITORY FOR YOUR OWN RESEARCH.
 
+The program files (R scripts - files with extension .R) in this repository are
+licensed under the terms of the GNU General Public License (see LICENSE file).
+You can redistribute them and/or modify them under the terms of the GNU General
+Public License as published by the Free Software Foundation, either version 3 of
+the License, or (at your option) any later version. These programs are
+distributed in the hope that they will be useful,but WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+PURPOSE. See the GNU General Public License for more details. You should have
+received a copy of the GNU General Public License along with this program. If
+not, see <https://www.gnu.org/licenses/>.
 
-PLEASE, CITE THE PUBLICATION ABOVE IF YOU USE THE SCRIPTS FOR YOUR OWN RESEARCH
+## Required software to run
 
-Requirements:
+The scripts in this repository are written for R 3.6.2
 
-R version 3.3.1 or higher Rstudio version 1.1.383 or higher
-Bioconductor version 3.6 or higher
+Used packages and versions are:
 
-Other packages required:
+from CRAN:
 
-CRAN:
+ggplot2 3.2.1
+RColorBrewer 1.1-2
+plyr 1.8.4
+testit 0.11
+circlize 0.4.7
+factoextra 1.0.6
+dplyr 0.8.3 
+scales 1.0.0
+stringr 1.4.0
+tidyr 1.0.2
+VennDiagram 1.6.20
+viridis 0.5.1 
 
+from Bioconductor:
 
-
-BIOCONDUCTOR:
-
-TCGAbiolinks SummarizedExperiment limma
-
-NOTES:
-
-a) We suggest to use Rstudio to run the scripts of interest so that you can follow the analyses one line at the time and digest the results.
-
+SummarizedExperiment 
+limma 
+enrichR 2.1
+ComplexHeatmap 2.0.0
+TCGAbiolinks 2.12.6_dev0
 
