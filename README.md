@@ -1,13 +1,13 @@
-## Introduction
 
 Computational Biology Laboratory, Danish Cancer Society Research Center, Strandboulevarden 49, 2100, Copenhagen, Denmark.
 
 This GitHub repository is associated with the publication
 
-    Despoina Sakellariou, Matteo Tiberti, Thomas H. Kleiber, Lorea Blazquez,
-    Aida Rodriguez-López, Marie Holm Abildgaard, Michal Lubas, Jiri Bartek,
-    Elena Papaleo, Lisa B. Frankel, eIF4A3 regulates the TFEB-mediated
-    transcriptional response via GSK3B to control autophagy, submitted.
+eIF4A3 regulates the TFEB-mediated transcriptional response via GSK3B to control autophagy.
+Sakellariou D, Tiberti M, Kleiber TH, Blazquez L, López AR, Abildgaard MH, Lubas M, Bartek J, Papaleo E, Frankel LB.
+Cell Death Differ. 2021 Dec;28(12):3344-3356. doi: 10.1038/s41418-021-00822-y. 
+
+reference person for repository: elenap-at-cancer.dk
 
 The repository was made with the intent of openly sharing both the raw input data
 used at the time of the analyses and the R-scripts employed to carry out the study.
